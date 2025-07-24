@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# --- CONFIG ---
+
+# Folder containing your wallpapers
+WALLPAPER_DIR="$HOME/.config/hypr/wallpapers"
+
+# Hyprpaper config file path
+HYPWP_CONF="$HOME/.config/hypr/hyprpaper.conf"
+
+# Monitor name (optional: you can automate this too)
+MONITOR=$(hyprctl monitors | grep Monitor | awk '{print $2}' | head -n1)
+
+# Build an array of full paths
+mapfile -t wallpapers < <(find "$WALLPAPER_DIR" -type f \( -iname '*.jpg' -o -iname '*.png' \) | sort)
+
+# Extract just filenames for rofi menu
+names=()
+for wp in "${wallpapers[@]}"; do
+  names+=("$(basename "$wp")")
+done
+
+# Show filenames in rofi, user selects one
+selected=$(printf '%s\n' "${names[@]}" | rofi -dmenu -i -p "Select Wallpaper")
+
+# Exit if nothing selected
+[ -z "$selected" ] && exit 1
+
+# Find full path matching the selection
+for i in "${!names[@]}"; do
+  if [[ "${names[$i]}" == "$selected" ]]; then
+    wallpaper="${wallpapers[$i]}"
+    break
+  fi
+done
+
+# Update hyprpaper.conf
+sed -i '/^preload =/d' "$HYPWP_CONF"
+sed -i '/^wallpaper =/d' "$HYPWP_CONF"
+
+echo "preload = $wallpaper" >> "$HYPWP_CONF"
+echo "wallpaper = $MONITOR, $wallpaper" >> "$HYPWP_CONF"
+
+# Restart hyprpaper to apply wallpaper
+pkill hyprpaper
+hyprpaper & disown
