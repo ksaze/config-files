@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Adapated from
+# https://github.com/WasamiKirua/Kakikori-Hyprland-Rice
+
 prep_stage=(
     brightnessctl
     dunst
