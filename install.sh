@@ -62,6 +62,8 @@ other_toys=(
     zen-browser-bin
     criterion
     valgrind
+    fd 
+    skim
 )
 
 for str in ${myArray[@]}; do

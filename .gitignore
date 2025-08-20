@@ -1,5 +1,7 @@
 .config/discord
+.config/bleachbit
 .config/dconf
+.config/htop
 .config/gh
 .config/pulse
 .config/dconf
